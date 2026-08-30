@@ -1,6 +1,5 @@
 ###############################################################################
 # WGCNA disease-module stability analysis for GSE310471 lung and tonsil
-# (Response to Reviewers R2-6)
 #
 # The main WGCNA analysis (03_wgcna_gse310471_exploratory.R) is exploratory by
 # design given the modest per-tissue sample sizes (Lung n = 17, Tonsil n = 18).

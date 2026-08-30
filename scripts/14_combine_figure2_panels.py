@@ -9,7 +9,7 @@ with bold "A"/"B" panel labels.
 Run this AFTER re-running integrated_cross_dataset_signature_heatmap.R (which
 regenerates integrated_HUVEC_in_vivo_signature_heatmap.png and
 integrated_conserved_signature_lollipop.png with the GSE33133 duplicate
-excluded from recurrence/priority-score counting; see Response to Reviewers R2-1).
+excluded from recurrence/priority-score counting).
 
 NOTE on the panel-A title: pheatmap's own `main =` title in
 integrated_HUVEC_in_vivo_signature_heatmap.png is clipped at the top edge of
@@ -56,7 +56,7 @@ TITLE_BAR_HEIGHT = 150  # white band above the (cropped) heatmap holding the "A"
 # column-annotation colour bars begin, i.e. everything above this row is the broken/
 # clipped title band and gets discarded. Re-check this if the R script's fontsize,
 # cellheight, or annotation rows change materially.
-HEATMAP_TITLE_CROP_PX = 56  # re-measured after R2-11 fontsize bump (was 59 at fontsize=9/8/8)
+HEATMAP_TITLE_CROP_PX = 56  # re-measured after increasing pheatmap fontsize for legibility (was 59 at fontsize=9/8/8)
 
 
 def get_font(size):

@@ -1,12 +1,13 @@
 ###############################################################################
 # GSE310471 temporal-progression analysis: formal DESeq2 LRT + module
-# eigengene trajectories across DPI (Response to Reviewers R2-5)
+# eigengene trajectories across DPI
 #
 # Purpose:
-#   R2-5 notes that "progression" was previously supported only by increasing
-#   DEG counts across 3/4/5 DPI versus baseline, which is not a formal
-#   time/trend test, and asks for either (i) a formal time/trend statistical
-#   model, or (ii) gene/module trajectories with uncertainty estimates.
+#   "Progression" was previously supported only by increasing DEG counts
+#   across 3/4/5 DPI versus baseline, which is not a formal time/trend test.
+#   A more rigorous characterization requires either (i) a formal time/trend
+#   statistical model, or (ii) gene/module trajectories with uncertainty
+#   estimates.
 #
 #   This script provides both:
 #     (1) A formal DESeq2 likelihood-ratio test (LRT) per tissue, comparing
@@ -156,7 +157,7 @@ ggsave(
 # Console summary
 ###############################################################################
 
-cat("\n=== R2-5 progression LRT summary ===\n")
+cat("\n=== Progression LRT summary ===\n")
 print(as.data.frame(lrt_summary))
 cat("\nFull LRT results written to: GSE310471_progression_LRT_full.csv\n")
 cat("Trajectory data written to: GSE310471_progression_module_eigengene_trajectories.csv\n")

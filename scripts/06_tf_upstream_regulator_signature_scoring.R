@@ -34,7 +34,7 @@ integrated_long <- readr::read_csv(
 )
 
 # scoring_included flags GSE33133_HUVEC_NiV_vs_Mock as a duplicate of GSE32902_HUVEC_NiV_vs_Mock
-# (same GEO sample records; see Response to Reviewers, R2-1). Retained for display, excluded from
+# (same GEO sample records). Retained for display, excluded from
 # the recurrence summary (ranked_regulators) below.
 scoring_excluded_contrasts <- integrated_long %>%
   filter(!scoring_included) %>%
@@ -78,7 +78,7 @@ score_matrix <- tf_scores %>%
   column_to_rownames("regulator") %>%
   as.matrix()
 
-# Mark the GSE33133 NiV-vs-Mock column as a shared/duplicate sample set (see R2-1): displayed
+# Mark the GSE33133 NiV-vs-Mock column as a shared/duplicate sample set: displayed
 # here for transparency but excluded from the ranked_regulators recurrence summary below.
 score_matrix_labels_col <- ifelse(
   colnames(score_matrix) %in% scoring_excluded_contrasts,

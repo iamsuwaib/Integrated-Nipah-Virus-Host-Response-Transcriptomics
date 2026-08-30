@@ -1,12 +1,11 @@
 ###############################################################################
-# Sensitivity analysis: rank-based cross-dataset integration (Response to
-# Reviewer 2, comment R2-2)
+# Sensitivity analysis: rank-based cross-dataset integration
 #
 # Purpose:
-#   R2-2 asks for (a) the exact scoring rule used to build the candidate
-#   shortlist (already fully documented in Methods 2.3 / candidate_biomarker
+#   This analysis provides (a) the exact scoring rule used to build the
+#   candidate shortlist (documented in Methods 2.3 / candidate_biomarker
 #   _table.R) and (b) a demonstration that the resulting top candidates are
-#   not an artefact of that particular scoring rule, preferably via a
+#   not an artefact of that particular scoring rule, via an independent,
 #   study-level signed/rank-based integration that does not treat every
 #   contrast as an equivalent evidence unit.
 #
@@ -16,15 +15,15 @@
 #       percentile rank of log2FC (0 = most downregulated, 1 = most
 #       upregulated). This normalizes each contrast to its own effect-size
 #       distribution before combining across contrasts, which is exactly the
-#       "do not treat every contrast as an equivalent evidence unit" concern
-#       the reviewer raised (a HUVEC microarray log2FC and an AGM RNA-seq
+#       "do not treat every contrast as an equivalent evidence unit" goal
+#       above (a HUVEC microarray log2FC and an AGM RNA-seq
 #       log2FC are not on the same natural scale; percentile rank puts them
 #       on a common, comparable footing).
 #     - Multiple probes mapping to the same gene symbol within a contrast are
 #       collapsed exactly as in the primary pipeline: smallest adjusted P
 #       value retained, ties broken by largest |log2FC| (see Methods 2.3).
 #     - The GSE33133 duplicate HUVEC contrast (GSE33133_HUVEC_NiV_vs_Mock) is
-#       excluded from scoring for the same reason established under R2-1.
+#       excluded from scoring for the same reason applied throughout this project (Methods 2.3).
 #     - A gene's rank_based_score is the mean percentile rank across the
 #       scored contrasts in which it was detected (genes not detected in a
 #       contrast are excluded from that contrast's average, consistent with
@@ -101,7 +100,7 @@ gse310471_tables <- c(
     file.path(project_dir, "GSE310471/results/tables/GSE310471_DESeq2_all_Tonsil_5DPI_vs_baseline.csv")
 )
 
-# Same duplicate-contrast exclusion established for R2-1.
+# Same duplicate-contrast exclusion applied throughout this project (Methods 2.3).
 scoring_excluded_contrasts <- c("GSE33133_HUVEC_NiV_vs_Mock")
 
 collapse_probes <- function(df, gene_col, log2fc_col, padj_col) {
@@ -282,7 +281,7 @@ ggsave(
 # 5. Console summary
 ###############################################################################
 
-cat("\n=== R2-2 sensitivity analysis: rank-based vs. priority score ===\n")
+cat("\n=== Sensitivity analysis: rank-based vs. priority score ===\n")
 cat("Overall Spearman rho (priority_score vs rank_based_score):", round(overall_spearman, 3), "\n\n")
 cat("Per-module shortlist overlap (priority-score shortlist vs. top-N by rank-based score):\n")
 print(as.data.frame(overlap_summary))

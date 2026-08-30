@@ -337,7 +337,7 @@ contrast_order <- c(
 
 # GSE32902 and GSE33133 are not independent HUVEC experiments: GSE33133_HUVEC_NiV_vs_Mock
 # re-lists the identical four GEO sample records (GSM813064-GSM813067) already represented by
-# GSE32902_HUVEC_NiV_vs_Mock (see Response to Reviewers, R2-1). GSE33133_HUVEC_NiV_vs_Mock is
+# GSE32902_HUVEC_NiV_vs_Mock. GSE33133_HUVEC_NiV_vs_Mock is
 # therefore retained in the raw integrated_long table, heatmap, and dotplot below for
 # transparency, but is excluded from cross-dataset recurrence counting and priority-score
 # calculations so that this shared evidence is not double-counted. GSE33133's NiV-dC contrasts
@@ -496,7 +496,7 @@ heatmap_palette <- colorRampPalette(
   rev(RColorBrewer::brewer.pal(11, "RdBu"))
 )(101)
 
-# Mark the GSE33133 NiV-vs-Mock column as a shared/duplicate sample set (see R2-1): it is
+# Mark the GSE33133 NiV-vs-Mock column as a shared/duplicate sample set: it is
 # displayed here for transparency but excluded from recurrence/priority-score counting.
 display_labels_col <- ifelse(
   colnames(heatmap_mat_capped) %in% scoring_excluded_contrasts,
@@ -546,7 +546,7 @@ dotplot_df <- integrated_long %>%
     significant_label = ifelse(significant, "FDR < 0.05 and |log2FC| >= 1", "not significant")
   )
 
-# Same duplicate-column labeling as the heatmap above (see R2-1).
+# Same duplicate-column labeling as the heatmap above.
 dotplot_contrast_labels <- setNames(
   ifelse(
     contrast_order %in% scoring_excluded_contrasts,

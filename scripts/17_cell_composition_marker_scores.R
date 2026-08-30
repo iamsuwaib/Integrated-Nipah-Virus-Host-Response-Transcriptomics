@@ -1,15 +1,14 @@
 ###############################################################################
-# Cell-composition marker-gene assessment (Response to Reviewers R2-3)
+# Cell-composition marker-gene assessment
 #
 # Purpose:
-#   R2-3 notes that the HUVEC-vs-in-vivo comparison changes cell type,
-#   species, platform, and infection timing simultaneously, so bulk tissue
-#   complement/coagulation signatures could reflect altered leukocyte,
-#   endothelial, or stromal abundance rather than (or in addition to) genuine
-#   within-cell transcriptional regulation, and the reviewer offers a
-#   systematic marker-based assessment of endothelial, myeloid, lymphoid, and
-#   stromal populations as an acceptable lighter-weight alternative to formal
-#   deconvolution.
+#   The HUVEC-vs-in-vivo comparison changes cell type, species, platform, and
+#   infection timing simultaneously, so bulk tissue complement/coagulation
+#   signatures could reflect altered leukocyte, endothelial, or stromal
+#   abundance rather than (or in addition to) genuine within-cell
+#   transcriptional regulation. This script performs a systematic
+#   marker-based assessment of endothelial, myeloid, lymphoid, and stromal
+#   populations as a lighter-weight alternative to formal deconvolution.
 #
 #   This script computes, per GSE310471 lung/tonsil sample, a simple
 #   composition score for each of five canonical marker-gene sets (mean
@@ -210,8 +209,7 @@ ggsave(
 # with both DPI and the tonsil disease module (see correlation_summary above).
 # SFTPC is a lung alveolar type-II pneumocyte marker with no expected role in
 # tonsil, so before reporting this result we decompose the two-gene mean score
-# into its individual genes to check which one is responsible (Response to
-# Reviewers R2-3).
+# into its individual genes to check which one is responsible.
 ###############################################################################
 
 epithelial_per_gene <- bind_rows(
@@ -283,7 +281,7 @@ cat("caveat and excluded from biological interpretation (see Discussion).\n")
 # Console summary
 ###############################################################################
 
-cat("\n=== R2-3 cell-composition marker-gene assessment ===\n")
+cat("\n=== Cell-composition marker-gene assessment ===\n")
 print(as.data.frame(correlation_summary))
 cat("\nPer-sample scores written to: cell_composition_marker_scores_per_sample.csv\n")
 cat("Correlation summary written to: cell_composition_marker_correlation_summary.csv\n")

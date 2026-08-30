@@ -10,7 +10,7 @@ Run this AFTER re-running 04_focused_wgcna_module_discovery_figure.R and
 02_tf_upstream_regulator_signature_scoring.R (which regenerate
 focused_wgcna_candidate_modules_panel.png and
 tf_upstream_regulator_score_heatmap.png with the GSE33133 duplicate excluded
-from recurrence/priority-score counting; see Response to Reviewers R2-1).
+from recurrence/priority-score counting).
 
 Usage (from the Nipah_transcriptomics project root):
     python3 15_combine_figure4_panels.py

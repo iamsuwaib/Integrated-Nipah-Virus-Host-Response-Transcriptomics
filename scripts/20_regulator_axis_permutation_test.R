@@ -1,6 +1,6 @@
 ###############################################################################
 # Permutation-based null model for the targeted regulatory-signature axis
-# scores (Response to Reviewers R2-7)
+# scores
 #
 # The existing axis scores (02_tf_upstream_regulator_signature_scoring.R,
 # score = mean(log2FC) * log2(n_targets_detected + 1)) were reported as raw
@@ -22,7 +22,7 @@
 #
 # GSE33133_HUVEC_NiV_vs_Mock is excluded here exactly as it is excluded from
 # ranked_regulators in the main scoring script (duplicate GSE32902 sample
-# records; see Response to Reviewers R2-1).
+# records).
 #
 # For the microarray (limma) universes, multiple probes can map to the same
 # gene SYMBOL. We collapse to one row per SYMBOL using the same rule already
