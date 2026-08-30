@@ -33,6 +33,14 @@ integrated_long <- readr::read_csv(
   show_col_types = FALSE
 )
 
+# scoring_included flags GSE33133_HUVEC_NiV_vs_Mock as a duplicate of GSE32902_HUVEC_NiV_vs_Mock
+# (same GEO sample records; see Response to Reviewers, R2-1). Retained for display, excluded from
+# the recurrence summary (ranked_regulators) below.
+scoring_excluded_contrasts <- integrated_long %>%
+  filter(!scoring_included) %>%
+  pull(contrast) %>%
+  unique()
+
 tf_sets <- tribble(
   ~regulator, ~target_genes,
   "IRF7 / antiviral IRF axis", "MX1,MX2,OAS1,OAS2,OAS3,OASL,IFIT1,IFIT2,IFIT3,IFIT5,IFIH1,DDX58,RSAD2,ISG15,USP18,HERC5,HERC6,PARP9",
@@ -49,7 +57,7 @@ tf_sets <- tribble(
 tf_scores <- integrated_long %>%
   mutate(gene = as.character(gene)) %>%
   inner_join(tf_sets, by = c("gene" = "target_genes")) %>%
-  group_by(regulator, contrast, dataset, model, tissue, timepoint) %>%
+  group_by(regulator, contrast, dataset, model, tissue, timepoint, scoring_included) %>%
   summarise(
     n_targets_detected = n_distinct(gene),
     n_targets_sig_up = sum(direction == "up", na.rm = TRUE),
@@ -70,6 +78,14 @@ score_matrix <- tf_scores %>%
   column_to_rownames("regulator") %>%
   as.matrix()
 
+# Mark the GSE33133 NiV-vs-Mock column as a shared/duplicate sample set (see R2-1): displayed
+# here for transparency but excluded from the ranked_regulators recurrence summary below.
+score_matrix_labels_col <- ifelse(
+  colnames(score_matrix) %in% scoring_excluded_contrasts,
+  paste0(colnames(score_matrix), "*"),
+  colnames(score_matrix)
+)
+
 png(
   file.path(figure_dir, "tf_upstream_regulator_score_heatmap.png"),
   width = 4200, height = 2600, res = 300
@@ -80,6 +96,7 @@ pheatmap(
   cluster_rows = TRUE,
   cluster_cols = FALSE,
   border_color = NA,
+  labels_col = score_matrix_labels_col,
   fontsize = 12,
   fontsize_row = 12,
   fontsize_col = 11,
@@ -90,12 +107,16 @@ pheatmap(
 dev.off()
 
 ranked_regulators <- tf_scores %>%
+  filter(scoring_included) %>%
   group_by(regulator) %>%
   summarise(
     mean_score = mean(score, na.rm = TRUE),
     max_score = max(score, na.rm = TRUE),
     n_contrasts_positive = sum(score > 0, na.rm = TRUE),
-    n_contrasts_high = sum(score > quantile(tf_scores$score, 0.75, na.rm = TRUE), na.rm = TRUE),
+    n_contrasts_high = sum(
+      score > quantile(tf_scores$score[tf_scores$scoring_included], 0.75, na.rm = TRUE),
+      na.rm = TRUE
+    ),
     .groups = "drop"
   ) %>%
   arrange(desc(mean_score), desc(n_contrasts_positive))

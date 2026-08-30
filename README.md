@@ -1,77 +1,89 @@
-# Nipah Virus Host-Response Transcriptomics
+# Integrated Nipah Virus Host-Response Transcriptomics
 
-This repository contains the R analysis scripts used for the manuscript:
+**GitHub repository:** https://github.com/iamsuwaib/Integrated-Nipah-Virus-Host-Response-Transcriptomics
 
-**A Two-Layer Transcriptomic Model of Nipah Virus Infection Identifies Conserved Antiviral Defense and In Vivo Tissue Disease Programs**
+**Associated manuscript:**  
+Khan S, Khan TU, Ahmad J, Ullah A, Butt S, Ahmed A. *Integrated host-response transcriptomics separates a conserved antiviral-associated program from in vivo tissue-associated disease programs in Nipah virus infection.* Computational and Structural Biotechnology Reports (under revision), 2026.
 
-The analysis integrates public GEO transcriptomic datasets from human endothelial-cell Nipah virus infection and African green monkey lung and tonsil infection to identify conserved antiviral/interferon responses and in vivo tissue-associated complement, coagulation/hemostasis, vascular-inflammatory, and metabolic-remodeling programs.
+---
 
-## Public Datasets
+## Overview
 
-| Dataset | System | Platform type | Main comparison |
+This repository contains the R analysis scripts used to generate all figures, tables, and supplementary outputs for the manuscript. The analysis integrates three public GEO datasets to define conserved antiviral and tissue-level disease-amplification programs during Nipah virus (NiV) infection:
+
+| Dataset | System | Platform | Comparison |
 |---|---|---|---|
-| GSE32902 | Human HUVEC | Expression array | NiV vs mock |
-| GSE33133 | Human HUVEC | Expression array | NiV, NiV-dC, mock |
-| GSE310471 | African green monkey lung and tonsil | RNA-seq counts | 3, 4, and 5 DPI vs baseline |
+| GSE32902 | Human HUVEC | Microarray | NiV vs. mock |
+| GSE33133 | Human HUVEC | Microarray | NiV, NiV-dC vs. mock |
+| GSE310471 | AGM lung & tonsil | RNA-seq | Baseline, 3, 4, 5 DPI |
 
-GSE33133 extends the HUVEC endothelial infection design by adding the NiV-dC condition; it should not be treated as a fully independent validation dataset for GSE32902. GSE310471 provides the independent in vivo progression layer.
+Data are available from the NCBI Gene Expression Omnibus (https://www.ncbi.nlm.nih.gov/geo/).
 
-## Analysis Overview
+---
 
-The workflow includes:
+## Analysis Scripts
 
-1. Dataset-level quality control and differential expression analysis.
-2. Cross-dataset integration at the gene-symbol and contrast-result level.
-3. Candidate biomarker prioritization.
-4. Targeted regulator-axis scoring.
-5. Exploratory WGCNA on GSE310471 lung and tonsil expression matrices.
-6. Ranked GO Biological Process GSEA and WGCNA module-enrichment analysis.
-7. Targeted manuscript figure generation from reviewed analysis outputs.
+Scripts are numbered in the order they should be run. Each script is self-contained and outputs figures and/or result tables.
 
-Raw expression values were not pooled across platforms, species, or biological systems. Each dataset was normalized and analyzed independently using dataset-appropriate statistical methods, and integration was performed using contrast-level statistics.
-
-## Script Order
-
-Run scripts from the project root after downloading and extracting the required GEO files into the expected local folders.
-
-| Script | Purpose |
+| Script | Analysis |
 |---|---|
-| `01_GSE32902_limma_analysis.R` | QC and limma differential expression for GSE32902 |
-| `02_GSE33133_limma_analysis_png_only.R` | QC and limma differential expression for GSE33133 |
-| `03_GSE310471_DESeq2_analysis_png_only.R` | QC and DESeq2 differential expression for GSE310471 |
-| `04_integrated_cross_dataset_signature_heatmap.R` | Integrated cross-dataset signature matrix and heatmap |
-| `05_candidate_biomarker_table.R` | Candidate biomarker/signature prioritization |
-| `06_tf_upstream_regulator_signature_scoring.R` | Targeted regulator-axis scoring |
-| `07_wgcna_gse310471_exploratory.R` | Exploratory WGCNA for lung and tonsil |
-| `08_extract_wgcna_hubs_from_existing_rds.R` | Extract module hub/candidate information from WGCNA objects |
-| `09_wgcna_candidate_signature_membership.R` | Candidate gene module-membership analysis |
-| `10_focused_wgcna_module_discovery_figure.R` | Focused WGCNA manuscript figure generation |
-| `14_gsea_module_enrichment.R` | Ranked GO BP GSEA and WGCNA module ORA |
-| `15_targeted_gsea_figure_refinement.R` | Targeted GSEA/module-enrichment figure refinement |
+| `01_GSE32902_limma_analysis.R` | Differential expression of GSE32902 HUVEC microarray (limma) |
+| `02_GSE33133_limma_analysis_png_only.R` | Differential expression of GSE33133 HUVEC microarray, WT NiV and NiV-dC (limma) |
+| `03_GSE310471_DESeq2_analysis_png_only.R` | Differential expression of GSE310471 AGM lung and tonsil RNA-seq (DESeq2); HUVEC-signature projection into tissues (Figure 3) |
+| `04_integrated_cross_dataset_signature_heatmap.R` | Cross-dataset signature integration and heatmap (Figure 2A, 2B) |
+| `05_candidate_biomarker_table.R` | Candidate biomarker shortlist and Table 1 |
+| `06_tf_upstream_regulator_signature_scoring.R` | Targeted regulatory-signature scoring (Figure 4B, Table S6) |
+| `07_wgcna_gse310471_exploratory.R` | WGCNA co-expression network analysis for GSE310471 lung and tonsil (Figures 4A, S16, S17) |
+| `08_secretome_surfaceome.R` | Extracellular and cell-surface mediator prioritization (Figure 6, Tables S13-S15) |
+| `09_wgcna_candidate_signature_membership.R` | Candidate gene WGCNA module membership mapping (Figure S18, Tables S7-S8) |
+| `10_focused_wgcna_module_discovery_figure.R` | Focused WGCNA module discovery figure (Figure 4A) |
+| `11_gsea_module_enrichment.R` | Ranked GO Biological Process GSEA and module ORA (Figure 5, Tables S11-S12) |
+| `12_targeted_gsea_figure_refinement.R` | Targeted GSEA and module enrichment figure refinement (Figure 5) |
+| `13_combine_figure3_panels.py` | Figure 3 panel compositing (lung/tonsil projection heatmaps) |
+| `14_combine_figure2_panels.py` | Figure 2 panel compositing (integrated heatmap + conserved-signature lollipop) |
+| `15_combine_figure4_panels.py` | Figure 4 panel compositing (WGCNA module panel + regulatory-signature heatmap) |
+| `16_sensitivity_rank_based_scoring.R` | Sensitivity analysis: priority score vs. an independent rank-based composite score (Supplementary Figure S20, Tables S16-S17) |
+| `17_cell_composition_marker_scores.R` | Cell-composition marker-gene scoring across infection time (Supplementary Figures S21-S22, Tables S18-S19) |
+| `18_progression_lrt_and_trajectories.R` | Formal DESeq2 likelihood-ratio test for the infection-time effect; module eigengene trajectories (Table S20, Supplementary Figure S23) |
+| `19_wgcna_module_stability.R` | Bootstrap and leave-one-out WGCNA module-trait correlation stability, and full network re-clustering (Table S21, Supplementary Figure S26) |
+| `20_regulator_axis_permutation_test.R` | Genome-wide permutation-null testing of the regulatory-signature axis scores (Table S22, Supplementary Figure S27) |
 
-Manuscript assembly, exploratory drug ranking, and unused validation-triage helper scripts are intentionally excluded from this final GitHub-ready folder.
+---
 
-## Main R Dependencies
+## Requirements
 
-The manuscript analyses were performed in R v4.4.2. Major packages included:
+R version 4.4.2. Key packages:
 
 - `limma` v3.62.2
 - `DESeq2` v1.46.0
+- `WGCNA` (for scripts 07, 09, 10, 19)
 - `clusterProfiler` v4.14.6
 - `fgsea` v1.32.4
-- `WGCNA`
-- `ggplot2` v4.0.2
+- `ggplot2` v3.5.1
 - `pheatmap` v1.0.13
 - `dplyr` v1.1.4
 - `tidyverse` v2.0.0
 
-Package versions may vary across systems; scripts include package-loading sections and should be checked against the accompanying manuscript methods.
+Install Bioconductor packages with:
 
-## Outputs
+```r
+if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")
+BiocManager::install(c("limma", "DESeq2", "clusterProfiler", "fgsea", "WGCNA"))
+```
 
-Scripts generate dataset-level results, integrated tables, candidate biomarker tables, WGCNA module outputs, GSEA/module-enrichment tables, and PNG figures. Output folders are defined inside each script and may need adjustment if the project is moved to a different directory.
+---
+
+## Data Availability
+
+All raw data are publicly available from NCBI GEO. No patient data or restricted datasets are included in this repository. Processed supplementary tables (S1-S23) and supplementary figures (S1-S27) are provided with the manuscript submission.
+
+---
 
 ## Citation
 
-If using these scripts, please cite the associated manuscript and the original GEO datasets.
+If you use these scripts, please cite the associated manuscript (full citation to be updated upon acceptance) and, for reproducibility, the specific tagged release of this repository used (see Releases).
 
+## Contact
+
+Sohaib Khan — sohaib.khan@ug.edu.pl  
+International Centre for Cancer Vaccine Science, University of Gdansk, Poland

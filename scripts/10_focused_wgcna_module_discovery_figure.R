@@ -188,12 +188,12 @@ panel_palette <- c(
 make_module_plot <- function(df, panel_label) {
   plot_df <- df %>%
     arrange(abs_kME) %>%
-    mutate(gene_label = factor(gene_label, levels = unique(gene_label)))
+    mutate(gene_label = factor(gene, levels = unique(gene)))  # fix: gene_label is dropped by the select() above; build it from gene
 
   module_r <- plot_df %>%
     summarise(
-      infected_r = first(infected_module_cor),
-      dpi_r = first(dpi_module_cor)
+      infected_r = dplyr::first(infected_module_cor),
+      dpi_r = dplyr::first(dpi_module_cor)
     )
 
   ggplot(plot_df, aes(x = abs_kME, y = gene_label)) +
