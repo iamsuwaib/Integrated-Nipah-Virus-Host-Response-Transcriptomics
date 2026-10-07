@@ -1,13 +1,27 @@
 ###############################################################################
-# TF / upstream regulator signature scoring
+# TF / upstream regulator signature scoring (targeted regulatory-signature axes)
 #
 # Goal:
-#   Score targeted TF/regulatory programs relevant to the current biological
-#   story: IRF7, STAT1/STAT2/IRF9, ISGF3-like IFN signaling, NF-kB, and selected
-#   antiviral regulators.
+#   Score targeted TF/regulatory programs relevant to the biological story:
+#   IRF7, STAT1/STAT2/IRF9, ISGF3-like IFN signaling, RIG-I/MDA5 sensing,
+#   NF-kB / inflammatory chemokines, endothelial activation and
+#   complement/coagulation.
 #
 # This script is intentionally offline/reproducible. It does not depend on IPA,
 # Enrichr, Dorothea, or internet access.
+#
+# Scores are computed from the genome-wide per-contrast differential-expression
+# tables through the shared helper regulator_axis_common.R (also used by script
+# 20), so the observed axis scores here and in script 20 are identical. Axis
+# genes need not be members of the 57-gene curated panel; for example the NF-kB
+# targets NFKB1, RELA and NFKBIA are not in the panel but are scored whenever
+# they are detected in a contrast.
+#
+# Outputs (advanced_analyses/tables, advanced_analyses/figures):
+#   tf_upstream_regulator_signature_scores.csv
+#   tf_upstream_regulator_ranked_summary.csv
+#   tf_axis_target_detection.csv   (which axis genes were detected per contrast)
+#   tf_upstream_regulator_score_heatmap.png
 ###############################################################################
 
 options(stringsAsFactors = FALSE)
@@ -16,61 +30,59 @@ packages <- c("tidyverse", "pheatmap", "RColorBrewer")
 for (pkg in packages) {
   if (!requireNamespace(pkg, quietly = TRUE)) install.packages(pkg, dependencies = TRUE)
 }
-
 library(tidyverse)
 library(pheatmap)
 library(RColorBrewer)
 
 project_dir <- "D:/Postdoc_Data/Vorolgia/Nipah_transcriptomics"
+source(file.path(project_dir, "Revised_manuscript_R2/04_github_repository_files/scripts/regulator_axis_common.R"))
+
 advanced_dir <- file.path(project_dir, "advanced_analyses")
 table_dir <- file.path(advanced_dir, "tables")
 figure_dir <- file.path(advanced_dir, "figures")
 dir.create(table_dir, recursive = TRUE, showWarnings = FALSE)
 dir.create(figure_dir, recursive = TRUE, showWarnings = FALSE)
 
-integrated_long <- readr::read_csv(
+# Contrast metadata (dataset / model / tissue / timepoint) from the integrated signature table
+contrast_meta <- readr::read_csv(
   file.path(project_dir, "integrated_results/tables/integrated_signature_long.csv"),
   show_col_types = FALSE
-)
-
-# scoring_included flags GSE33133_HUVEC_NiV_vs_Mock as a duplicate of GSE32902_HUVEC_NiV_vs_Mock
-# (same GEO sample records). Retained for display, excluded from
-# the recurrence summary (ranked_regulators) below.
-scoring_excluded_contrasts <- integrated_long %>%
-  filter(!scoring_included) %>%
-  pull(contrast) %>%
-  unique()
-
-tf_sets <- tribble(
-  ~regulator, ~target_genes,
-  "IRF7 / antiviral IRF axis", "MX1,MX2,OAS1,OAS2,OAS3,OASL,IFIT1,IFIT2,IFIT3,IFIT5,IFIH1,DDX58,RSAD2,ISG15,USP18,HERC5,HERC6,PARP9",
-  "ISGF3-like STAT1/STAT2/IRF9 axis", "STAT1,STAT2,IRF9,MX1,MX2,OAS1,OAS2,OAS3,OASL,IFIT1,IFIT2,IFIT3,ISG15,USP18,RSAD2",
-  "RIG-I/MDA5 sensing axis", "DDX58,IFIH1,IRF7,IRF9,STAT1,STAT2,IFIT1,IFIT2,IFIT3,MX1,OAS1,CXCL10,CXCL11",
-  "NF-kB / inflammatory chemokine axis", "NFKB1,RELA,NFKBIA,TNF,IL6,CXCL10,CXCL11,CXCL9,CCL2,CCL5,ICAM1,VCAM1,SELE",
-  "Endothelial activation axis", "ICAM1,VCAM1,SELE,ANGPT2,VWF,THBD,SERPINE1,PLAU,PLAUR,F3",
-  "Complement/coagulation progression axis", "C3,C4A,C4B,C1QA,C1QB,C1QC,CFB,CFD,CFH,CFI,SERPING1,FGB,FGG,FGA,PROC,PROS1,THBD,SERPINE1"
 ) %>%
-  mutate(target_genes = str_split(target_genes, ",")) %>%
-  tidyr::unnest(target_genes) %>%
-  mutate(target_genes = str_trim(target_genes))
+  distinct(contrast, dataset, model, tissue, timepoint)
 
-tf_scores <- integrated_long %>%
-  mutate(gene = as.character(gene)) %>%
-  inner_join(tf_sets, by = c("gene" = "target_genes")) %>%
-  group_by(regulator, contrast, dataset, model, tissue, timepoint, scoring_included) %>%
-  summarise(
-    n_targets_detected = n_distinct(gene),
-    n_targets_sig_up = sum(direction == "up", na.rm = TRUE),
-    n_targets_sig_down = sum(direction == "down", na.rm = TRUE),
-    mean_log2FC = mean(log2FC, na.rm = TRUE),
-    median_log2FC = median(log2FC, na.rm = TRUE),
-    max_log2FC = max(log2FC, na.rm = TRUE),
-    score = mean(log2FC, na.rm = TRUE) * log2(n_targets_detected + 1),
-    .groups = "drop"
-  ) %>%
+# All 10 contrasts are scored for display; GSE33133 NiV-vs-Mock is flagged
+# scoring_included = FALSE (duplicate of the GSE32902 sample records) and is
+# excluded from the ranked summary below.
+universes <- load_universes(scored_only = FALSE)
+
+tf_scores <- purrr::map_dfr(axes, function(ax) {
+  ax_genes <- tf_sets$target_genes[tf_sets$regulator == ax]
+  purrr::map_dfr(names(universes), function(cn) {
+    dplyr::bind_cols(tibble(regulator = ax, contrast = cn), score_geneset(universes[[cn]], ax_genes))
+  })
+}) %>%
+  left_join(contrast_meta, by = "contrast") %>%
+  left_join(contrast_registry %>% select(contrast, scoring_included), by = "contrast") %>%
+  select(regulator, contrast, dataset, model, tissue, timepoint, scoring_included,
+         n_targets_detected, n_targets_sig_up, n_targets_sig_down,
+         mean_log2FC, median_log2FC, max_log2FC, score) %>%
   arrange(regulator, contrast)
 
 readr::write_csv(tf_scores, file.path(table_dir, "tf_upstream_regulator_signature_scores.csv"))
+
+# Which axis genes were (not) detected in each contrast
+target_detection <- purrr::map_dfr(axes, function(ax) {
+  ax_genes <- tf_sets$target_genes[tf_sets$regulator == ax]
+  purrr::map_dfr(names(universes), function(cn) {
+    det <- intersect(ax_genes, universes[[cn]]$gene)
+    tibble(
+      regulator = ax, contrast = cn,
+      n_axis_genes = length(ax_genes), n_detected = length(det),
+      genes_not_detected = paste(setdiff(ax_genes, det), collapse = ";")
+    )
+  })
+})
+readr::write_csv(target_detection, file.path(table_dir, "tf_axis_target_detection.csv"))
 
 score_matrix <- tf_scores %>%
   select(regulator, contrast, score) %>%
@@ -78,8 +90,7 @@ score_matrix <- tf_scores %>%
   column_to_rownames("regulator") %>%
   as.matrix()
 
-# Mark the GSE33133 NiV-vs-Mock column as a shared/duplicate sample set: displayed
-# here for transparency but excluded from the ranked_regulators recurrence summary below.
+scoring_excluded_contrasts <- contrast_registry$contrast[!contrast_registry$scoring_included]
 score_matrix_labels_col <- ifelse(
   colnames(score_matrix) %in% scoring_excluded_contrasts,
   paste0(colnames(score_matrix), "*"),
@@ -123,4 +134,8 @@ ranked_regulators <- tf_scores %>%
 
 readr::write_csv(ranked_regulators, file.path(table_dir, "tf_upstream_regulator_ranked_summary.csv"))
 
-message("TF/upstream regulator scoring complete.")
+message("TF/upstream regulator scoring complete (genome-wide implementation).")
+cat("\n=== Ranked regulatory-signature axes (9 scored contrasts) ===\n")
+print(as.data.frame(ranked_regulators), row.names = FALSE)
+cat("\nNF-kB authoritative mean score:",
+    round(ranked_regulators$mean_score[grepl("^NF-kB", ranked_regulators$regulator)], 3), "\n")

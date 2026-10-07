@@ -30,16 +30,20 @@ Usage (from the Nipah_transcriptomics project root):
 import os
 from PIL import Image, ImageDraw, ImageFont
 
-PROJECT_DIR = "D:/Postdoc_Data/Vorolgia/Nipah_transcriptomics"
+PROJECT_DIR = os.environ.get("NIPAH_PROJECT_DIR", "D:/Postdoc_Data/Vorolgia/Nipah_transcriptomics")
 HEATMAP_PNG = os.path.join(PROJECT_DIR, "integrated_results", "figures", "integrated_HUVEC_in_vivo_signature_heatmap.png")
 LOLLIPOP_PNG = os.path.join(PROJECT_DIR, "integrated_results", "figures", "integrated_conserved_signature_lollipop.png")
 
-OUT_DIR = os.path.join(PROJECT_DIR, "Revised_manuscript", "02_figures")
+# Output folder for the figure panels.
+OUT_DIR = os.path.join(PROJECT_DIR, "Revised_manuscript_R2", "02_figures")
+os.makedirs(OUT_DIR, exist_ok=True)
 OUT_HEATMAP = os.path.join(OUT_DIR, "Figure_2_integrated_signature_heatmap.png")
 OUT_LOLLIPOP = os.path.join(OUT_DIR, "Figure_2b_conserved_signature_lollipop.png")
 OUT_COMBINED = os.path.join(OUT_DIR, "Figure_2_integrated_signature_panels.png")
 
 LABEL_FONT_CANDIDATES = [
+    "C:/Windows/Fonts/arialbd.ttf",
+    "C:/Windows/Fonts/segoeuib.ttf",
     "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
     "/usr/local/lib/python3.10/dist-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans-Bold.ttf",
 ]

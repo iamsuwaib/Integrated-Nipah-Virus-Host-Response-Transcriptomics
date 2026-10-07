@@ -734,9 +734,8 @@ plot_signature_heatmap <- function(tissue_name) {
     dplyr::select(sample_id, dpi) %>%
     tibble::column_to_rownames("sample_id")
 
-  # NOTE (revision R1-m4): font size and border contrast increased further per
-  # reviewer request for gene-label and data-point legibility in Figure 3.
-  # Settings harmonized with the working copy of this script (GSE310471/).
+  # Font size and border contrast are set for gene-label and data-point
+  # legibility at print size.
   png(
     file.path(FIG_DIR, paste0("Heatmap_HUVEC_signature_", tissue_name, ".png")),
     width = 3400,
@@ -744,12 +743,8 @@ plot_signature_heatmap <- function(tissue_name) {
     res = 300
   )
 
-  # NOTE (revision R1-m4, 2nd pass): the first attempt at these settings
-  # (2200x2800 canvas, angle_col=45) clipped the sample labels and the dpi
-  # legend against the canvas edges once fonts were enlarged. Canvas
-  # enlarged substantially and column labels switched to vertical (90
-  # degrees) to remove the diagonal-label overhang that caused the left-edge
-  # clipping.
+  # Large canvas with vertical (90 degree) column labels, so that the sample
+  # labels and the dpi legend are not clipped at the canvas edges.
   pheatmap(
     mat,
     scale = "row",

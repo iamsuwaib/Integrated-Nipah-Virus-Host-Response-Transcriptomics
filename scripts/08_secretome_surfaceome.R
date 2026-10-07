@@ -241,7 +241,13 @@ candidate_long <- integrated %>%
   mutate(
     compartment = map_chr(gene, annotate_compartment),
     physiology_class = map_chr(gene, annotate_physiology),
-    context_id = paste(dataset, tissue, timepoint, sep = " | ")
+    context_id = paste(dataset, tissue, timepoint, sep = " | "),
+    # GSE32902 and GSE33133 are two GEO
+    # series representing ONE underlying HUVEC experiment (Methods 2.3), not
+    # two independent datasets/studies. "study" collapses them into a single
+    # unit so dataset-count-based evidence below reflects independent
+    # biological systems rather than independent GEO accessions.
+    study = ifelse(dataset %in% c("GSE32902", "GSE33133"), "HUVEC_study", dataset)
   ) %>%
   filter(compartment != "other")
 
@@ -254,6 +260,12 @@ candidate_summary <- candidate_long %>%
     n_significant_up = sum(significant & direction == "up", na.rm = TRUE),
     n_significant_down = sum(significant & direction == "down", na.rm = TRUE),
     n_datasets = n_distinct(dataset),
+    # Study-level count used for scoring (see "study" above): GSE32902 and
+    # GSE33133 count as ONE independent study (HUVEC), so this reflects
+    # genuine cross-system breadth rather than GEO-accession count.
+    # n_datasets is retained in the output table for transparency only and
+    # is not used in priority_score / evidence_level below.
+    n_studies = n_distinct(study),
     n_tissues = n_distinct(tissue),
     n_timepoints = n_distinct(timepoint),
     mean_log2FC = mean(log2FC, na.rm = TRUE),
@@ -273,14 +285,14 @@ candidate_summary <- candidate_long %>%
     ),
     priority_score =
       (2.5 * n_significant_up) +
-      (1.5 * n_datasets) +
+      (1.5 * n_studies) +
       n_tissues +
       n_timepoints +
       pmin(replace_na(max_abs_log2FC, 0), 5) -
       (1.0 * n_significant_down),
     evidence_level = case_when(
-      n_significant_up >= 6 & n_datasets >= 2 ~ "high",
-      n_significant_up >= 3 & n_datasets >= 2 ~ "moderate",
+      n_significant_up >= 6 & n_studies >= 2 ~ "high",
+      n_significant_up >= 3 & n_studies >= 2 ~ "moderate",
       n_significant_up >= 2 ~ "supportive",
       n_significant_up >= 1 ~ "limited",
       TRUE ~ "detected_not_significant"

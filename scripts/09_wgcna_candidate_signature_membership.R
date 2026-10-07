@@ -8,7 +8,7 @@
 # Why:
 #   The generic top-hub tables are useful but not sufficient. We need to know
 #   whether our biologically important candidates are strong members of the
-#   infection/progression-associated modules.
+#   infection-associated modules.
 ###############################################################################
 
 options(stringsAsFactors = FALSE)
@@ -111,9 +111,9 @@ membership_long <- bind_rows(
     candidate_is_strong_module_member = abs(kME) >= 0.8,
     module_trait_support = case_when(
       trait == "infected" & correlation >= 0.7 & pvalue < 0.01 ~ "strong_infection_positive",
-      trait == "dpi_numeric" & correlation >= 0.7 & pvalue < 0.01 ~ "strong_progression_positive",
+      trait == "dpi_numeric" & correlation >= 0.7 & pvalue < 0.01 ~ "strong_dpi_positive",
       trait == "infected" & correlation <= -0.7 & pvalue < 0.01 ~ "strong_infection_negative",
-      trait == "dpi_numeric" & correlation <= -0.7 & pvalue < 0.01 ~ "strong_progression_negative",
+      trait == "dpi_numeric" & correlation <= -0.7 & pvalue < 0.01 ~ "strong_dpi_negative",
       pvalue < 0.05 ~ "nominal_trait_association",
       TRUE ~ "weak_or_no_trait_association"
     )
@@ -136,18 +136,18 @@ membership_summary <- membership_long %>%
     strong_module_member = abs(kME) >= 0.8,
     strong_infection_module = !is.na(infected_module_cor) &
       infected_module_cor >= 0.7 & infected_module_p < 0.01,
-    strong_progression_module = !is.na(dpi_module_cor) &
+    strong_disease_module = !is.na(dpi_module_cor) &
       dpi_module_cor >= 0.7 & dpi_module_p < 0.01,
     .groups = "drop"
   ) %>%
   mutate(
     wgcna_support_class = case_when(
-      strong_module_member & strong_infection_module & strong_progression_module ~
-        "strong infection/progression module member",
+      strong_module_member & strong_infection_module & strong_disease_module ~
+        "strong infection-associated module member",
       strong_module_member & strong_infection_module ~
         "strong infection module member",
-      strong_module_member & strong_progression_module ~
-        "strong progression module member",
+      strong_module_member & strong_disease_module ~
+        "strong DPI-associated module member",
       strong_module_member ~
         "strong module member but weak trait support",
       TRUE ~ "present but not strong module member"
@@ -194,7 +194,7 @@ plot_df <- membership_summary %>%
       levels = c(
         "Conserved antiviral/IFN core",
         "In vivo complement/coagulation disease module",
-        "Mainly in vivo immune/progression module",
+        "Mainly in vivo immune-associated module",
         "HUVEC-enriched endothelial/early-response module",
         "Supporting candidate"
       )

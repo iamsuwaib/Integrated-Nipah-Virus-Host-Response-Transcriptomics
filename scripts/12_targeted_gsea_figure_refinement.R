@@ -245,15 +245,15 @@ module_target_terms <- tibble::tribble(
   "Lung antiviral module", "type I interferon-mediated signaling pathway", "Type I IFN signaling",
   "Lung antiviral module", "interferon-mediated signaling pathway", "Interferon signaling",
   
-  "Tonsil progression module", "innate immune response", "Innate immune response",
-  "Tonsil progression module", "complement activation", "Complement activation",
-  "Tonsil progression module", "complement activation, classical pathway", "Complement, classical pathway",
-  "Tonsil progression module", "complement activation, alternative pathway", "Complement, alternative pathway",
-  "Tonsil progression module", "blood coagulation", "Blood coagulation",
-  "Tonsil progression module", "hemostasis", "Hemostasis",
-  "Tonsil progression module", "regulation of blood coagulation", "Regulation of blood coagulation",
-  "Tonsil progression module", "negative regulation of hemostasis", "Negative regulation of hemostasis",
-  "Tonsil progression module", "fibrinolysis", "Fibrinolysis"
+  "Tonsil complement/coagulation module", "innate immune response", "Innate immune response",
+  "Tonsil complement/coagulation module", "complement activation", "Complement activation",
+  "Tonsil complement/coagulation module", "complement activation, classical pathway", "Complement, classical pathway",
+  "Tonsil complement/coagulation module", "complement activation, alternative pathway", "Complement, alternative pathway",
+  "Tonsil complement/coagulation module", "blood coagulation", "Blood coagulation",
+  "Tonsil complement/coagulation module", "hemostasis", "Hemostasis",
+  "Tonsil complement/coagulation module", "regulation of blood coagulation", "Regulation of blood coagulation",
+  "Tonsil complement/coagulation module", "negative regulation of hemostasis", "Negative regulation of hemostasis",
+  "Tonsil complement/coagulation module", "fibrinolysis", "Fibrinolysis"
 ) %>%
   dplyr::mutate(
     Description_key = stringr::str_squish(stringr::str_to_lower(Description))
@@ -267,7 +267,7 @@ module_targeted <- module_all %>%
   dplyr::mutate(
     module_panel = dplyr::case_when(
       tissue == "Lung" ~ "Lung tan/ME12: antiviral IFN module",
-      tissue == "Tonsil" ~ "Tonsil blue/ME2: progression module",
+      tissue == "Tonsil" ~ "Tonsil blue/ME2: complement/coagulation module",
       TRUE ~ module
     ),
     padj_plot = pmax(p.adjust, 1e-300),
@@ -277,7 +277,7 @@ module_targeted <- module_all %>%
       module_panel,
       levels = c(
         "Lung tan/ME12: antiviral IFN module",
-        "Tonsil blue/ME2: progression module"
+        "Tonsil blue/ME2: complement/coagulation module"
       )
     )
   )

@@ -51,7 +51,7 @@ candidate_table <- top_conserved %>%
         category %in% c("complement", "coagulation") ~
         "In vivo complement/coagulation disease module",
       conserved_call == "mainly_in_vivo" ~
-        "Mainly in vivo immune/progression module",
+        "Mainly in vivo immune-associated module",
       conserved_call == "mainly_HUVEC" ~
         "HUVEC-enriched endothelial/early-response module",
       TRUE ~ "Supporting candidate"
@@ -65,9 +65,9 @@ candidate_table <- top_conserved %>%
       manuscript_module == "Conserved antiviral/IFN core" ~
         "Repeatedly upregulated across HUVEC and in vivo contrasts; supports conserved Nipah antiviral host-response signature.",
       manuscript_module == "In vivo complement/coagulation disease module" ~
-        "Predominantly induced in AGM tissues; supports disease-progression biology not captured by HUVEC alone.",
-      manuscript_module == "Mainly in vivo immune/progression module" ~
-        "Stronger in AGM tissue contrasts; may reflect immune-cell or tissue-level infection progression.",
+        "Predominantly induced in AGM tissues; supports disease-associated biology not captured by HUVEC alone.",
+      manuscript_module == "Mainly in vivo immune-associated module" ~
+        "Stronger in AGM tissue contrasts; may reflect immune-cell or tissue-level infection response.",
       manuscript_module == "HUVEC-enriched endothelial/early-response module" ~
         "Supported primarily by human endothelial-cell contrasts; useful for early endothelial response framing.",
       TRUE ~ "Secondary supporting gene for pathway-level interpretation."
@@ -115,7 +115,7 @@ plot_df <- shortlist %>%
         "Conserved antiviral/IFN core",
         "In vivo complement/coagulation disease module",
         "HUVEC-enriched endothelial/early-response module",
-        "Mainly in vivo immune/progression module",
+        "Mainly in vivo immune-associated module",
         "Supporting candidate"
       )
     )
@@ -138,7 +138,7 @@ print(
         "Conserved antiviral/IFN core" = "#762A83",
         "In vivo complement/coagulation disease module" = "#E66101",
         "HUVEC-enriched endothelial/early-response module" = "#1F78B4",
-        "Mainly in vivo immune/progression module" = "#5AAE61",
+        "Mainly in vivo immune-associated module" = "#5AAE61",
         "Supporting candidate" = "grey65"
       )
     ) +

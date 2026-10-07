@@ -1,11 +1,10 @@
 ###############################################################################
-# GSE310471 temporal-progression analysis: formal DESeq2 LRT + module
+# GSE310471 temporal analysis: formal DESeq2 LRT + module
 # eigengene trajectories across DPI
 #
 # Purpose:
-#   "Progression" was previously supported only by increasing DEG counts
-#   across 3/4/5 DPI versus baseline, which is not a formal time/trend test.
-#   A more rigorous characterization requires either (i) a formal time/trend
+#   Pairwise DEG counts at 3/4/5 DPI versus baseline are not a formal
+#   time/trend test. A more rigorous characterization requires either (i) a formal time/trend
 #   statistical model, or (ii) gene/module trajectories with uncertainty
 #   estimates.
 #
@@ -21,7 +20,7 @@
 #         complement/coagulation (blue/ME2) WGCNA module eigengenes across
 #         DPI, showing per-sample dispersion (the "uncertainty estimate").
 #         The module-eigengene-vs-DPI correlations themselves are already
-#         reported in the manuscript from the original WGCNA module-trait
+#         reported in the manuscript from the WGCNA module-trait
 #         analysis (Methods 2.5) and are not recomputed here.
 #
 # Inputs:

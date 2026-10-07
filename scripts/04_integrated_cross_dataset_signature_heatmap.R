@@ -496,12 +496,30 @@ heatmap_palette <- colorRampPalette(
   rev(RColorBrewer::brewer.pal(11, "RdBu"))
 )(101)
 
+# Short, print-legible column labels for the heatmap (dense
+# panel labels are hard to read at normal page magnification). The full GSE
+# accession / contrast identifiers remain in contrast_order above, in the
+# "dataset" annotation color bar, and in the Methods/figure legend, so nothing
+# is lost by displaying the compact form here.
+short_contrast_labels <- c(
+  GSE32902_HUVEC_NiV_vs_Mock        = "HUVEC NiV vs Mock (32902)",
+  GSE33133_HUVEC_NiV_vs_Mock        = "HUVEC NiV vs Mock (33133)",
+  GSE33133_HUVEC_NiVdC_vs_Mock      = "HUVEC NiV-dC vs Mock",
+  GSE33133_HUVEC_NiVdC_vs_NiV       = "HUVEC NiV-dC vs NiV",
+  GSE310471_Lung_3DPI_vs_baseline   = "Lung 3 DPI",
+  GSE310471_Lung_4DPI_vs_baseline   = "Lung 4 DPI",
+  GSE310471_Lung_5DPI_vs_baseline   = "Lung 5 DPI",
+  GSE310471_Tonsil_3DPI_vs_baseline = "Tonsil 3 DPI",
+  GSE310471_Tonsil_4DPI_vs_baseline = "Tonsil 4 DPI",
+  GSE310471_Tonsil_5DPI_vs_baseline = "Tonsil 5 DPI"
+)
+
 # Mark the GSE33133 NiV-vs-Mock column as a shared/duplicate sample set: it is
 # displayed here for transparency but excluded from recurrence/priority-score counting.
 display_labels_col <- ifelse(
   colnames(heatmap_mat_capped) %in% scoring_excluded_contrasts,
-  paste0(colnames(heatmap_mat_capped), "*"),
-  colnames(heatmap_mat_capped)
+  paste0(short_contrast_labels[colnames(heatmap_mat_capped)], "*"),
+  short_contrast_labels[colnames(heatmap_mat_capped)]
 )
 
 png(

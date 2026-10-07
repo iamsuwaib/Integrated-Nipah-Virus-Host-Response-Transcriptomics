@@ -5,20 +5,19 @@
 #   This analysis provides (a) the exact scoring rule used to build the
 #   candidate shortlist (documented in Methods 2.3 / candidate_biomarker
 #   _table.R) and (b) a demonstration that the resulting top candidates are
-#   not an artefact of that particular scoring rule, via an independent,
-#   study-level signed/rank-based integration that does not treat every
-#   contrast as an equivalent evidence unit.
+#   not an artefact of that particular scoring rule, via an alternative,
+#   rank-based integration that normalizes each contrast to its own effect-size
+#   distribution (a robustness check on the same data, not an independent
+#   validation).
 #
-#   This script builds an independent, rank-based composite score:
+#   This script builds an alternative, rank-based composite score:
 #     - For EACH contrast, and among ALL genome-wide detected genes in that
 #       contrast (not just the curated ~57-gene signature panel), compute the
 #       percentile rank of log2FC (0 = most downregulated, 1 = most
 #       upregulated). This normalizes each contrast to its own effect-size
-#       distribution before combining across contrasts, which is exactly the
-#       "do not treat every contrast as an equivalent evidence unit" goal
-#       above (a HUVEC microarray log2FC and an AGM RNA-seq
-#       log2FC are not on the same natural scale; percentile rank puts them
-#       on a common, comparable footing).
+#       distribution before combining across contrasts (a HUVEC microarray
+#       log2FC and an AGM RNA-seq log2FC are not on the same natural scale;
+#       percentile rank puts them on a common, comparable footing).
 #     - Multiple probes mapping to the same gene symbol within a contrast are
 #       collapsed exactly as in the primary pipeline: smallest adjusted P
 #       value retained, ties broken by largest |log2FC| (see Methods 2.3).

@@ -7,7 +7,7 @@
 #
 #   1. Lung antiviral/IFN candidates are strong members of the lung tan module.
 #   2. Tonsil complement/coagulation candidates are strong members of the tonsil
-#      blue infection/progression module.
+#      blue infection-associated module.
 #
 # Input:
 #   advanced_analyses/tables/WGCNA_candidate_signature_membership_summary.csv
@@ -67,11 +67,11 @@ lung_antiviral <- membership %>%
     module_numeric == 12,
     manuscript_module %in% c(
       "Conserved antiviral/IFN core",
-      "Mainly in vivo immune/progression module"
+      "Mainly in vivo immune-associated module"
     ),
     strong_module_member,
     strong_infection_module,
-    strong_progression_module
+    strong_disease_module
   ) %>%
   arrange(desc(priority_score), desc(abs(kME))) %>%
   slice_head(n = 20) %>%
@@ -90,7 +90,7 @@ tonsil_complement <- membership %>%
     manuscript_module == "In vivo complement/coagulation disease module",
     strong_module_member,
     strong_infection_module,
-    strong_progression_module
+    strong_disease_module
   ) %>%
   arrange(desc(priority_score), desc(abs(kME))) %>%
   mutate(
@@ -111,7 +111,7 @@ focused <- bind_rows(lung_antiviral, tonsil_complement) %>%
     gene_label = gene,
     candidate_class = case_when(
       manuscript_module == "Conserved antiviral/IFN core" ~ "Conserved antiviral/IFN core",
-      manuscript_module == "Mainly in vivo immune/progression module" ~ "In vivo IFN/progression support",
+      manuscript_module == "Mainly in vivo immune-associated module" ~ "In vivo IFN/immune support",
       manuscript_module == "In vivo complement/coagulation disease module" ~ "Complement/coagulation disease module",
       TRUE ~ manuscript_module
     )
@@ -181,7 +181,7 @@ saveWorkbook(
 
 panel_palette <- c(
   "Conserved antiviral/IFN core" = "#2C7FB8",
-  "In vivo IFN/progression support" = "#7B3294",
+  "In vivo IFN/immune support" = "#7B3294",
   "Complement/coagulation disease module" = "#D95F02"
 )
 
